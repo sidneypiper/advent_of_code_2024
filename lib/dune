@@ -1,0 +1,4 @@
+(library
+ (name advent_of_code_2024)
+ (modules day01 day02)
+ (public_name advent_of_code_2024))
