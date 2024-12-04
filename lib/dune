@@ -1,5 +1,5 @@
 (library
  (name advent_of_code_2024)
- (modules day01 day02 day03)
+ (modules day01 day02 day03 day04)
  (public_name advent_of_code_2024)
  (libraries Str))
