@@ -54,9 +54,9 @@ let step map x y =
               else helper map x (y + 1) d visited
       | 3 ->  if get_char_at map (x - 1) y = '#' then helper map x y 0 visited
               else helper map (x - 1) y d visited
-      | _ -> 0
+      | _ -> visited
     else
-      (PositionSet.cardinal visited) + 1
+       visited
   in
     helper map x y 0 PositionSet.empty
 
@@ -65,7 +65,7 @@ let solve_part1 (input: string list) =
   match find_char_position map with
   | None -> ""
   | Some (x, y) ->
-    string_of_int @@ step map x y
+    string_of_int @@ PositionSet.cardinal @@ step map x y
 
 let check_loop map x y = 
   let max_y = List.length map in
@@ -97,11 +97,9 @@ let solve_part2 (input: string list) =
   match find_char_position map with
   | None -> ""
   | Some (x, y) ->
-    let n = ref 0 in
-    for i = 0 to List.length map - 1 do
-      for j = 0 to List.length (List.hd map) - 1 do
-        let new_map = set_char_at map i j '#' in
-        n := !n + check_loop new_map x y
-      done
-    done;
-    string_of_int !n
+    let possible_stones = PositionSet.to_list (step map x y) in
+    string_of_int 
+    @@ (+) 1
+    @@ List.fold_left (+) 0 
+    @@ List.map 
+      (fun (nx, ny) -> check_loop (set_char_at map nx ny '#') x y) possible_stones
