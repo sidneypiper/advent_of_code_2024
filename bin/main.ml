@@ -60,4 +60,7 @@ let () =
     | 13 -> 
       Printf.printf "Part 1: %s\n" (Advent_of_code_2024.Day13.solve_part1 input);
       Printf.printf "Part 2: %s\n" (Advent_of_code_2024.Day13.solve_part2 input);
+    | 14 -> 
+      Printf.printf "Part 1: %s\n" (Advent_of_code_2024.Day14.solve_part1 input);
+      Printf.printf "Part 2: %s\n" (Advent_of_code_2024.Day14.solve_part2 input);
     | _ -> Printf.printf "Day %d not implemented yet\n" day
