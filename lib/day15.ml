@@ -104,7 +104,9 @@ let fix_warehouse_part2 warehouse =
         | 'O' -> ['['; ']']
         | c -> [c]))
 
-let move warehouse (x, y) direction =
+let move_part2 warehouse (x, y) direction =
+  Stdio.printf "Direction: %c\n" direction;
+  print_position (x, y);
   print_warehouse warehouse;
 
   let get_box warehouse (x, y) =
@@ -118,23 +120,29 @@ let move warehouse (x, y) direction =
     let nx, ny = get_box warehouse (x + dx, y + dy) in
 
     let rec find_boxes warehouse (nx, ny) (dx, dy) =
-      Stdio.printf "FIND BOX: %d %d %d %d\n" nx ny dx dy;
       match (dx, dy) with
       | 0, _ -> (
-        let next = char_at warehouse (nx + dx, ny) in
-        match next with
-        | '.' -> []
-        | '#' -> [(-1, -1, -1, -1)]
-        | '[' | ']' ->
-          let (blx, bly) = get_box warehouse (nx, ny + dy) in
-          let (brx, bry) = get_box warehouse (nx + 1, ny + dy) in
-          Stdio.printf "blx: %d bly: blx+dx:%d %d bly:%d\n" blx bly (blx + dx) bly;
-          Stdio.printf "brx: %d bry: brx+dx:%d %d bry:%d\n" brx bry (brx + dx) bry;
-          Stdio.printf "FIND BOX: %d %d %d %d\n" nx ny dx dy;
-          (blx, bly, blx + dx, bly) :: find_boxes warehouse (blx, bly) (dx, dy) @
-          (brx, bry, brx + dx, bry) :: find_boxes warehouse (brx, bry) (dx, dy)
-        | _ -> []
-      )
+        let nextl = char_at warehouse (nx, ny + dy) in
+        let nextr = char_at warehouse (nx + 1, ny + dy) in
+        let left = 
+          match nextl with
+          | '.' -> []
+          | '#' -> [(-1, -1, -1, -1)]
+          | '[' | ']' ->
+            let (blx, bly) = get_box warehouse (nx, ny + dy) in
+            (blx, bly, blx, bly + dy) :: find_boxes warehouse (blx, bly) (dx, dy)
+          | _ -> []
+          in
+        let right = 
+          match nextr with
+          | '.' -> []
+          | '#' -> [(-1, -1, -1, -1)]
+          | '[' | ']' ->
+            let (blx, bly) = get_box warehouse (nx + 1, ny + dy) in
+            (blx, bly, blx, bly + dy) :: find_boxes warehouse (blx, bly) (dx, dy)
+          | _ -> []
+        in
+        left @ right)
       | _, 0 -> (
         let next = char_at warehouse (nx + dx, ny) in
         match next with
@@ -150,8 +158,6 @@ let move warehouse (x, y) direction =
 
     let boxes = (nx, ny, nx + dx, ny + dy) :: find_boxes warehouse (nx, ny) (dx, dy) in
 
-    List.iter boxes ~f:(fun (a, b, c, d) -> Stdio.printf "%d %d %d %d\n" a b c d);
-
     let equal_swap (a1, b1, c1, d1) (a2, b2, c2, d2) = 
       a1 = a2 && b1 = b2 && c1 = c2 && d1 = d2
     in
@@ -163,15 +169,17 @@ let move warehouse (x, y) direction =
         List.mapi row ~f:(fun x char ->
             if List.mem boxes (x - 1, y, x - 2, y) ~equal:equal_swap 
               || List.mem boxes (x + 1, y, x + 2, y) ~equal:equal_swap
-              || List.mem boxes (x, y - 1, x, y) ~equal:equal_swap
-              || List.mem boxes (x, y + 1, x, y) ~equal:equal_swap then '.'
+              || List.mem boxes (x, y, x, y - 1) ~equal:equal_swap
+              || List.mem boxes (x - 1, y, x - 1, y - 1) ~equal:equal_swap
+              || List.mem boxes (x, y, x, y + 1) ~equal:equal_swap
+              || List.mem boxes (x - 1, y, x - 1, y + 1) ~equal:equal_swap then '.'
             else char)) in
       let warehouse = List.mapi warehouse ~f:(fun y row ->
         List.mapi row ~f:(fun x char ->
             if List.mem boxes (0, 0, x, y) ~equal:(fun (_, _, c1, d1) (_, _, c2, d2) -> c1 = c2 && d1 = d2) then '['
             else if List.mem boxes (0, 0, x - 1, y) ~equal:(fun (_, _, c1, d1) (_, _, c2, d2) -> c1 = c2 && d1 = d2) then ']'
             else char)) in
-      warehouse, (nx, ny)
+      warehouse, (x + dx, y + dy)
   in
 
   let dx, dy =
@@ -191,13 +199,13 @@ let move warehouse (x, y) direction =
   | '[' | ']' -> move_box warehouse (x, y) (dx, dy)
   | '#' | _ -> warehouse, (x, y)
 
-let solve_part2 (input: string list) = 
+let solve_part2 (input: string list) =
   let warehouse, moves, position = parse_input input in
   let warehouse = fix_warehouse_part2 warehouse in
   let position = (fun (x, y) -> x * 2, y) position in
   let warehouse, _ =
     List.fold moves ~init:(warehouse, position) ~f:(fun (current_warehouse, current_position) direction ->
-      move current_warehouse current_position direction)
+      move_part2 current_warehouse current_position direction)
   in
   List.mapi warehouse ~f:(fun y row ->
     List.mapi row ~f:(fun x char -> 
