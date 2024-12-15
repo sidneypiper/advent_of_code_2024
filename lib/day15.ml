@@ -105,9 +105,9 @@ let fix_warehouse_part2 warehouse =
         | c -> [c]))
 
 let move_part2 warehouse (x, y) direction =
-  Stdio.printf "Direction: %c\n" direction;
+  (* Stdio.printf "Direction: %c\n" direction;
   print_position (x, y);
-  print_warehouse warehouse;
+  print_warehouse warehouse; *)
 
   let get_box warehouse (x, y) =
     match char_at warehouse (x, y) with
@@ -131,7 +131,7 @@ let move_part2 warehouse (x, y) direction =
           | '[' | ']' ->
             let (blx, bly) = get_box warehouse (nx, ny + dy) in
             (blx, bly, blx, bly + dy) :: find_boxes warehouse (blx, bly) (dx, dy)
-          | _ -> []
+          | _ -> failwith "wrong input"
           in
         let right = 
           match nextr with
@@ -140,10 +140,10 @@ let move_part2 warehouse (x, y) direction =
           | '[' | ']' ->
             let (blx, bly) = get_box warehouse (nx + 1, ny + dy) in
             (blx, bly, blx, bly + dy) :: find_boxes warehouse (blx, bly) (dx, dy)
-          | _ -> []
+          | _ -> failwith "wrong input"
         in
         left @ right)
-      | _, 0 -> (
+      | -1, 0 -> (
         let next = char_at warehouse (nx + dx, ny) in
         match next with
         | '.' -> []
@@ -151,8 +151,18 @@ let move_part2 warehouse (x, y) direction =
         | '[' | ']' ->
           let (bx, by) = get_box warehouse (nx + dx, ny) in
           (bx, by, bx + dx, by) :: find_boxes warehouse (bx, by) (dx, dy)
-        | _ -> []
+        | _ -> failwith "wrong input"
         )
+      | 1, 0 -> (
+          let next = char_at warehouse (nx + dx + 1, ny) in
+          match next with
+          | '.' -> []
+          | '#' -> [(-1, -1, -1, -1)]
+          | '[' | ']' ->
+            let (bx, by) = get_box warehouse (nx + dx + 1, ny) in
+            (bx, by, bx + dx, by) :: find_boxes warehouse (bx, by) (dx, dy)
+          | _ -> failwith "wrong input"
+          )
       | _ -> []
     in
 
