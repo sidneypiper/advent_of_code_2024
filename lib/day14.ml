@@ -22,7 +22,7 @@ let calc_quadrant (robot: int * int * int * int) (seconds: int): int =
   else if x < horizontally && y < vertically then 1
   else if x < horizontally && y > vertically then 2
   else if x > horizontally && y < vertically then 3
-  else  4
+  else 4
 
 let solve_part1 (input: string list) =
   let quadrants = parse_input input
