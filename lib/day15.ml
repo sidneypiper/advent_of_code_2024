@@ -1,8 +1,8 @@
 open Base
 
-let print_warehouse grid =
-  List.iter grid ~f:(fun row ->
-      List.iter row ~f:(fun c -> Stdio.printf "%c" c);
+let print_warehouse grid (px, py) =
+  List.iteri grid ~f:(fun y row ->
+      List.iteri row ~f:(fun x c -> if x = px && y = py then Stdio.printf "%c" c else Stdio.printf "%c" c);
       Stdio.printf "\n")
 
 let print_moves chars =
@@ -105,10 +105,6 @@ let fix_warehouse_part2 warehouse =
         | c -> [c]))
 
 let move_part2 warehouse (x, y) direction =
-  (* Stdio.printf "Direction: %c\n" direction;
-  print_position (x, y);
-  print_warehouse warehouse; *)
-
   let get_box warehouse (x, y) =
     match char_at warehouse (x, y) with
     | '[' -> (x, y)
@@ -178,7 +174,7 @@ let move_part2 warehouse (x, y) direction =
       let warehouse = List.mapi warehouse ~f:(fun y row ->
         List.mapi row ~f:(fun x char ->
             if List.mem boxes (x - 1, y, x - 2, y) ~equal:equal_swap 
-              || List.mem boxes (x + 1, y, x + 2, y) ~equal:equal_swap
+              || List.mem boxes (x, y, x + 1, y) ~equal:equal_swap
               || List.mem boxes (x, y, x, y - 1) ~equal:equal_swap
               || List.mem boxes (x - 1, y, x - 1, y - 1) ~equal:equal_swap
               || List.mem boxes (x, y, x, y + 1) ~equal:equal_swap
