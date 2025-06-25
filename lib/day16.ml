@@ -44,7 +44,7 @@ let move_forward (x, y) = function
 
 let find_position maze c =
   let pos = ref (-1, -1) in
-  Grid.iter (fun (y, x) cur -> if Char.(cur = c) then pos := (x, y)) maze;
+  Grid.iter (fun (x, y) cur -> if Char.(cur = c) then pos := (x, y)) maze;
   !pos
 
 let solve_maze maze =
@@ -95,10 +95,10 @@ let print_maze (grid : char Grid.t) : unit =
   Grid.iter (fun (_, x) c -> if x = width then Stdio.printf "%c\n" c else Stdio.printf "%c" c) grid
 
 
-(* For my input this solution was of by 1000  *)
 let solve_part1 (input: string list) =
     parse_maze input
     |> solve_maze
     |> Int.to_string 
 
+    
 let solve_part2 (_input: string list) = ""
