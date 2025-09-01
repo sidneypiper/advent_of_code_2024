@@ -5,11 +5,11 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github sidneypiper/advent_of_code_2024))
 
-(authors "Author Name <author@example.com>")
+(authors "Sidney Piper <hello@saltyyy.dev>")
 
-(maintainers "Maintainer Name <maintainer@example.com>")
+(maintainers "Sidney Piper <hello@saltyyy.dev>")
 
 (license LICENSE)
 
