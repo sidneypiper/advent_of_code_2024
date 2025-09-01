@@ -71,8 +71,8 @@ let rec binary_search data low high =
   | None -> binary_search data low (high - mid)
   | Some _ -> binary_search data high (high + mid)
 
-let solve_part2 (_input: string list) = 
-  let data = parse_input _input in
+let solve_part2 (input: string list) = 
+  let data = parse_input input in
   let length = List.length data in
   let break = binary_search data 0 length in
   List.nth_exn data break
