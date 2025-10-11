@@ -21,22 +21,21 @@ let parse_graph parsed =
   |> Map.map ~f:(Hash_set.Poly.of_list)
 
 let find_3_cliques graph =
-  let nodes = Map.keys graph in
   let cliques = ref [] in
-  List.iter nodes ~f:(fun node ->
-    match Map.find graph node with
+  let nodes = Map.keys graph in
+  List.iter nodes ~f:(fun a ->
+    match Map.find graph a with
     | None -> ()
-    | Some neighbors ->
-      Hash_set.iter neighbors ~f:(fun n1 ->
-        match Map.find graph n1 with
-        | None -> ()
-        | Some n1_neighbors ->
-          Hash_set.iter n1_neighbors ~f:(fun n2 ->
-            if Hash_set.mem neighbors n2 && String.(<>) n1 n2 then
-              let clique = List.sort [node; n1; n2] ~compare:String.compare in
-              if not (List.mem !cliques clique ~equal:(List.equal String.equal)) then
-                cliques := clique :: !cliques
-          )
+    | Some neighbors_a ->
+      Hash_set.iter neighbors_a ~f:(fun b ->
+        if String.(a < b) then
+          match Map.find graph b with
+          | None -> ()
+          | Some neighbors_b ->
+            Hash_set.iter neighbors_a ~f:(fun c ->
+              if String.(b < c) && Hash_set.mem neighbors_b c && Hash_set.mem neighbors_a c then
+                cliques := [a; b; c] :: !cliques
+            )
       )
   );
   !cliques

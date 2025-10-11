@@ -74,8 +74,7 @@ let check_loop map x y =
     if PositionDirectionSet.mem (x, y, d) visited then
       1
     else
-      if x > 0 && x < max_x - 1 && y > 0 && y < max_y - 1 then 
-        ((*print_int x; print_string " "; print_int y; print_string " "; print_int d; print_newline ();*)
+      if x > 0 && x < max_x - 1 && y > 0 && y < max_y - 1 then (
         let visited = (PositionDirectionSet.add (x, y, d) visited) in
         match d with
         | 0 ->  if get_char_at map x (y - 1) = '#' then helper map x y 1 visited
@@ -86,7 +85,8 @@ let check_loop map x y =
                 else helper map x (y + 1) d visited
         | 3 ->  if get_char_at map (x - 1) y = '#' then helper map x y 0 visited
                 else helper map (x - 1) y d visited
-        | _ -> 0)
+        | _ -> 0
+      )
       else
         0
   in
